@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "mbus": {
+      "type": "object",
+      "description": "Necessary information for M-BUS interface",
+      "properties": {
+        "port": {
+          "type": "string",
+          "description": "interface for the M-BUS device (default: /dev/ttyS0)"
+        },
+        "baudRate": {
+          "type": "number",
+          "description": "Baudrate on the serial device (default: 2400)"
+        }
+      },
+      "required": [
+        "port",
+        "baudRate"
+      ]
+    },
+    "key": {
+      "type": "string",
+      "description": "Encryption key from your Power-provider (you need to ask them)"
+    },
+    "logging": {
+      "type": "object",
+      "description": "Optional Settings for logging (defaults to logfmt output on stdout)",
+      "properties": {
+        "console": {
+          "type": "object",
+          "description": "Setting for output to stdout",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "output to console? (true: DEFAULT, false)"
+            },
+            "format": {
+              "type": "string",
+              "description": "Which format (raw: DEFAULT, logfmt, json)"
+            },
+            "level": {
+              "type": "string",
+              "description": "Log level for console output (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default: INFO",
+              "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+            }
+          }
+        },
+        "file": {
+          "type": "object",
+          "description": "Settings for logging to file",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Logging to file? (true, false: DEFAULT)"
+            },
+            "format": {
+              "type": "string",
+              "description": "Which format (logfmt, json: DEFAULT)"
+            },
+            "path": {
+              "type": "string",
+              "description": "The path of the log file"
+            },
+            "level": {
+              "type": "string",
+              "description": "Log level for file output (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default: INFO",
+              "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+            }
+          }
+        },
+        "loki": {
+          "type": "object",
+          "description": "Settings for logging to Loki",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Logging to Loki? (true, false: DEFAULT)"
+            },
+            "url": {
+              "type": "string",
+              "description": "URL of the Loki instance (e.g. http://localhost:3100/loki/api/v1/push)"
+            },
+            "level": {
+              "type": "string",
+              "description": "Log level for Loki output (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default: INFO",
+              "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+            }
+          }
+        }
+      }
+    },
+    "mqtt": {
+      "type": "object",
+      "description": "Settings for MQTT data delivery",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Shall data be sent to MQTT? (false: DEFAULT, true)"
+        },
+        "brokerIP": {
+          "type": "string",
+          "description": "IP address or hostname of MQTT Broker"
+        },
+        "brokerPort": {
+          "type": "number",
+          "description": "Port of MQTT listener (default: 1883)"
+        },
+        "authentication": {
+          "type": "object",
+          "properties": {
+            "isAuthenticated": {
+              "type": "boolean",
+              "description": "Is authentication needed? (false: DEFAULT, true)"
+            },
+            "username": {
+              "type": "string",
+              "description": "User for MQTT connection if needed"
+            },
+            "password": {
+              "type": "string",
+              "description": "Password for MQTT connection if needed"
+            }
+          }
+        },
+        "mqttApiVersion": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 2,
+          "description": "Which API Version is used? 1 (Default) or 2"
+        },
+        "mqttPrefix": {
+          "type": "string",
+          "description": "Prefix for the MQTT Topic, defaults to smartmeter is not set"
+        }
+      }
+    },
+    "influxdb": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Shall data be sent to Influxdb? (false: DEFAULT, true)"
+        },
+        "serverIP": {
+          "type": "string",
+          "description": "IP address or hostname of Influxdb server"
+        },
+        "serverPort": {
+          "type": "number",
+          "description": "Port of Influxdb listener (default: 8086)"
+        },
+        "authentication": {
+          "type": "object",
+          "properties": {
+            "isAuthenticated": {
+              "type": "boolean",
+              "description": "Is authentication needed? (false: DEFAULT, true)"
+            },
+            "username": {
+              "type": "string",
+              "description": "User for Influxdb connection if needed"
+            },
+            "password": {
+              "type": "string",
+              "description": "Password for Influxdb connection if needed"
+            }
+          }
+        },
+        "database": {
+          "type": "string",
+          "description": "Influxdb database name, defaults to smartmeter if not set"
+        },
+        "organization": {
+          "type": "string",
+          "description": "Influxdb organization (if version > 1), defaults to smartmeter if not set"
+        },
+        "version": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 3,
+          "description": "Which version of Influxdb is used (1, 2: DEFAULT, 3)"
+        },
+        "sendMetrics": {
+          "type": "boolean",
+          "description": "Shall metrics on the application be sent? (false: DEFAULT, true)"
+        },
+        "sendValues": {
+          "type": "boolean",
+          "description": "Shall the power values be sent? (true: DEFAULT, false) "
+        }
+      }
+    },
+    "prometheus": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Shall data be exposed for Prometheus? (false: DEFAULT, true)"
+        },
+        "port": {
+          "type": "number",
+          "description": "On which port shall the metrics be exposed? Default: 8000"
+        },
+        "exposeMetrics": {
+          "type": "boolean",
+          "description": "Shall metrics on the application be exposed? (true: DEFAULT, false)"
+        },
+        "exposeValues": {
+          "type": "boolean",
+          "description": "Shall the power values be exposed? (false: DEFAULT, true)"
+        }
+      }
+    }
+  },
+  "required": [
+    "mbus",
+    "key"
+  ]
+}

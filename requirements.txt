@@ -1,0 +1,11 @@
+jsonschema
+pyserial
+pycryptodomex
+gurux-dlms
+paho-mqtt==1.6.1
+influxdb
+influxdb-client
+prometheus-client
+beautifulsoup4
+html5lib
+python-logging-loki

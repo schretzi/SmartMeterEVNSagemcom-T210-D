@@ -1,14 +1,58 @@
 {
-    "port": "/dev/ttyS0",
-    "baudrate": 2400,
+    "mbus": {
+        "port": "/dev/ttyS0",
+        "baudRate": 2400
+    },
     "key": "016F76543457DE95260FF087B9C640A9",
-    "printValue": true,
-    "useMQTT": false,
-    "mqttbrokerip": "",
-    "mqttbrokerport": "",
-    "mqttbrokeruser": "",
-    "mqttbrokerpasswort": "",
-    "useInfluxdb": false,
-    "influxdbip": "",
-    "influxdbport":"" 
+    "logging": {
+        "console": {
+            "enabled": true,
+            "format": "raw",
+            "level": "INFO"
+        },
+        "file": {
+            "enabled": false,
+            "format": "json",
+            "path": "",
+            "level": "INFO"
+        },
+        "loki": {
+            "enabled": false,
+            "url": "",
+            "level": "INFO"
+        }
+    },
+    "mqtt": {
+        "enabled": false,
+        "brokerIP": "",
+        "brokerPort": 1883,
+        "authentication": {
+            "isAuthenticated": false,
+            "username": "",
+            "password": ""
+        },
+        "mqttApiVersion": 1,
+        "mqttPrefix": "smartmeter"
+    },
+    "influxdb": {
+        "enabled": false,
+        "serverIP": "",
+        "serverPort": 8086,
+        "authentication": {
+            "isAuthenticated": false,
+            "username": "",
+            "password": ""
+        },
+        "database": "smartmeter",
+        "organization": "smartmeter",
+        "version": 2,
+        "sendMetrics": false,
+        "sendValues": true
+    },
+    "prometheus": {
+        "enabled": false,
+        "port": 8000,
+        "exposeMetrics": true,
+        "exposeValues": false
+    }
 }
