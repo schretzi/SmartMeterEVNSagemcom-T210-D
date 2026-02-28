@@ -81,6 +81,8 @@ class SerialReader:
         Reads from serial, decrypts, parses XML and updates power_values.
         Blocking call until one full valid frame is processed.
         """
+        raw_serial_data = None
+        decrypted_apdu = None
         while True:
             try:
                 if not self.ser or not self.ser.is_open:
@@ -90,6 +92,8 @@ class SerialReader:
                         continue
 
                 data = self.ser.read(size=282).hex()
+                raw_serial_data = data
+                decrypted_apdu = None
                 
                 if not data:
                     continue
@@ -108,6 +112,7 @@ class SerialReader:
                 frame = data[52:12+frame_len*2]
 
                 apdu = self._decrypt(frame, system_title, frame_counter)
+                decrypted_apdu = apdu
                 
                 if not apdu or apdu[0:4] != "0f80":
                     continue
@@ -118,4 +123,10 @@ class SerialReader:
 
             except Exception as e:
                 logger.error(f"Error in serial read loop: {e}")
+                logger.error(f"Original serial data: {raw_serial_data}")
+                if decrypted_apdu:
+                    logger.error(f"Decrypted APDU: {decrypted_apdu}")
+                else:
+                    logger.error("Decrypted APDU: not available")
+                self._reconnect()
                 time.sleep(1)
