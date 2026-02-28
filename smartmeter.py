@@ -32,8 +32,24 @@ class AppMetrics:
 # Setup Logging
 class JSONFormatter(logging.Formatter):
     def format(self, record):
-        log_record = {"timestamp": self.formatTime(record, self.datefmt), "name": record.name, "level": record.levelname, "message": record.getMessage()}
+        log_record = {
+            "timestamp": self.formatTime(record, self.datefmt),
+            "name": record.name,
+            "level": record.levelname,
+            "message": record.getMessage(),
+        }
+        if record.levelno >= logging.ERROR:
+            log_record["file"] = record.filename
+            log_record["line"] = record.lineno
         return json.dumps(log_record)
+
+
+class ErrorLocationFormatter(logging.Formatter):
+    def format(self, record):
+        record.error_location = ""
+        if record.levelno >= logging.ERROR:
+            record.error_location = f" ({record.filename}:{record.lineno})"
+        return super().format(record)
 
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.DEBUG) # Set root logger to the most permissive level
@@ -46,9 +62,11 @@ if cfg.logging.console.enabled:
     if cfg.logging.console.format == 'json':
         console_handler.setFormatter(JSONFormatter())
     elif cfg.logging.console.format == 'raw':
-        console_handler.setFormatter(logging.Formatter('%(message)s'))
+        console_handler.setFormatter(ErrorLocationFormatter('%(message)s%(error_location)s'))
     else:
-        console_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        console_handler.setFormatter(
+            ErrorLocationFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s%(error_location)s')
+        )
     root_logger.addHandler(console_handler)
 
 if cfg.logging.file.enabled and cfg.logging.file.path:
@@ -59,7 +77,9 @@ if cfg.logging.file.enabled and cfg.logging.file.path:
     if cfg.logging.file.format == 'json':
         file_handler.setFormatter(JSONFormatter())
     else:
-        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        file_handler.setFormatter(
+            ErrorLocationFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s%(error_location)s')
+        )
     root_logger.addHandler(file_handler)
 
 if hasattr(cfg.logging, 'loki') and cfg.logging.loki.enabled and cfg.logging.loki.url:
